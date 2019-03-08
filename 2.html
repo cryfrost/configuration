@@ -1,0 +1,99 @@
+/*http://www.runoob.com/bootstrap/bootstrap-buttons.html*/
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Bootstrap 实例 - 默认的导航栏</title>
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/cangKu_xiangXi.css">
+	<script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<nav class="navbar navbar-default" role="navigation">
+	<div class="container-fluid">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="#">生产管理系统</a>
+	</div>
+	<div>
+		<ul class="nav navbar-nav">
+			<li><a href="cangku.html">仓库管理</a></li>
+			<li><a href="cangku.html">仓品信息</a></li>
+			<li class="active"><a href="#">详细</a></li>
+		</ul>
+	</div>
+	</div>
+</nav>
+<form class="form-horizontal" role="form">
+
+	<div id="content-left">
+		<div class="form-group">
+			<label for="inputPassword" class="col-sm-2 control-label">仓品编号</label>
+			<div class="col-sm-10 input-width">
+				<input type="password" class="form-control" id="inputPassword" 
+					placeholder="请输入仓品编号">
+			</div>
+			<span>※自动采番</span>
+		</div>
+		<div class="form-group">
+			<label for="inputPassword" class="col-sm-2 control-label">仓品名称</label>
+			<div class="col-sm-10 input-width">
+				<input type="password" class="form-control" id="inputPassword" 
+					placeholder="请输入仓品名称">
+			</div>
+		</div>
+			<div class="form-group">
+			<label for="inputPassword" class="col-sm-2 control-label">仓品型号</label>
+			<div class="col-sm-10 input-width">
+				<input type="password" class="form-control" id="inputPassword" 
+					placeholder="请输入仓品型号">
+			</div>
+		</div>
+			<div class="form-group">
+			<label for="inputPassword" class="col-sm-2 control-label">业务员编号</label>
+			<div class="col-sm-10 input-width">
+				<input type="password" class="form-control" id="inputPassword" 
+					placeholder="请输入业务员编号">
+			</div>
+			<button type="button" class="btn btn-primary">辅助查询</button>
+		</div>
+			<div class="form-group">
+			<label for="inputPassword" class="col-sm-2 control-label">单价</label>
+			<div class="col-sm-10 input-width">
+				<input type="password" class="form-control" id="inputPassword" 
+					placeholder="请输入单价">
+			</div>
+			<span>(参考价格)</span>
+		</div>
+			<div class="form-group">
+			<label for="inputPassword" class="col-sm-2 control-label">数量</label>
+			<div class="col-sm-10 input-width">
+				<input type="password" class="form-control" id="inputPassword" 
+					placeholder="请输入数量">
+			</div>
+		</div>
+		<div id="div-button">
+			<div id="left-button">
+				<button type="button" class="btn btn-default">新建/更新</button>	
+			</div>
+			<div id="right-button">
+				<button type="button" class="btn btn-default">删除</button>
+			</div>
+		</div>
+	</div>
+	<div id="content-right">
+		<div class="form-group input-img">
+			<label class="sr-only" for="name">名称</label>
+			<input type="text" class="form-control" id="name" 
+				   placeholder="请输入照片">
+			<label class="sr-only" for="inputfile">文件输入</label>
+		</div>
+		<div class="form-group">
+			<label class="sr-only" for="inputfile">文件输入</label>
+			<input type="file" id="inputfile">
+		</div>
+	</div>	
+</form>
+</body>
+</html>
