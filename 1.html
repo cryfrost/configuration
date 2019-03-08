@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<link rel="stylesheet" href="css/bootstrap.min.css">
+		<link rel="stylesheet" href="css/cangKu.css">
+		<script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
+		<script src="js/bootstrap.min.js"></script>
+		
+		<script type="text/javascript">
+			function xinJianCangKu(){
+				location.href="cangKu_xinJian.html?fun=1"
+			}
+		</script>
+		
+	</head>
+	
+	<body>
+		
+	<nav class="navbar navbar-default" role="navigation">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<a class="navbar-brand" href="#">生产管理系统</a>
+			</div>
+			<div>
+				<ul class="nav navbar-nav">
+					<li ><a href="cangku.html">仓库管理</a></li> 
+				</ul>
+			</div>
+			<div>
+				<ul class="nav navbar-nav">
+					<li class="active"><a href="cangKu.html">仓品信息</a></li> 
+				</ul>
+			</div>
+		</div>	
+	</nav>
+	<div class="search">
+		<form>
+			<div id="search-input" >
+				<div class="input-group search-inputSet1">
+					<span class="input-group-addon">仓品编号</span>
+					<input type="text" class="form-control">
+					<span class="input-group-addon">辅助查询</span>
+				</div>
+				<div class="input-group search-inputSet2" >
+					<span class="input-group-addon">仓品名称</span>
+					<input type="text" class="form-control">
+					<span class="input-group-addon">辅助查询</span>
+				</div>
+				<div class="input-group search-inputSet3">
+					<span class="input-group-addon">商品型号</span>
+					<input type="text" class="form-control">
+					<span class="input-group-addon">辅助查询</span>
+				</div>
+			</div>
+			<div class="search-inputSet4">
+				<div class="canfku-button">
+					<button type="button" class="btn btn-default">新建</button>
+				</div>
+				<div class="canfku-button">
+					<button type="button" class="btn btn-default">检索</button>
+				</div>
+				<div class="canfku-button">
+					<input type="reset" class="btn btn-default" value="条件重置" />	
+				</div>
+			</div>
+			<br />
+		</form>
+	</div>
+	<br/>
+	<div >
+		<div class="btn-group" >
+			<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">显示条数
+				<span class="caret"></span>
+			</button>
+			<ul class="dropdown-menu" role="menu">
+				<li><a href="#">10</a></li>
+				<li><a href="#">20</a></li>
+				<li><a href="#">30</a></li>
+			</ul>
+		</div>
+		
+		<div style="float:right;">
+			<ul class="pagination">
+				<li><a href="#">&laquo;</a></li>
+				<li class="active"><a href="#">1</a></li>
+				<li><a href="#">2</a></li>
+				<li><a href="#">3</a></li>
+				<li><a href="#">4</a></li>
+				<li><a href="#">5</a></li>
+				<li><a href="#">&raquo;</a></li>
+			</ul>
+		</div>
+		
+		<div>
+			<table class="table">
+				<tr>
+					<th>No.</th><th>仓品编号</th><th>仓品名称</th><th>仓品型号</th><th>在库数量</th><th>物料商品区</th><th>详细</th>
+				</tr>
+				<tr>
+					<th>1</th><th>19030401</th><th>A1</th><th>B1</th><th>C1</th><th>D1</th><th><a href="cangKu_xiangXi.html" >详细</a></th>
+				</tr>	
+				<tr>
+					<th>2</th><th>19030402</th><th>A2</th><th>B2</th><th>C2</th><th>D2</th><th><a href="cangKu_xiangXi.html" >详细</a></th>
+				</tr>
+			</table>
+		</div>
+	</div>
+</body>
+</html>
