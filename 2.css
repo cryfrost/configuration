@@ -1,0 +1,36 @@
+form{
+	padding-top: 60px;
+}
+#content-left{
+	/* background-color: #000000; */
+	width: 600px;
+	margin-left: 15%;
+	float:left;
+}
+#content-right{
+	margin-left: 10%;
+	float:left;
+}
+#div-button{
+	margin-top: 150px;
+	margin-left: 300px;
+}
+.input-width{
+	width: 250px;
+	height: 60px;
+}
+#left-button{
+	float: left;
+}
+#right-button{
+	margin-left: 100px;
+	float: left;
+	/* padding-left: 50px; */
+}
+.input-img input{
+	width: 150px;
+	height: 200px;
+	margin-right: 200px;
+	margin-top: 30px;
+	float: right;
+}
