@@ -1,0 +1,28 @@
+#search-input{
+	margin-left: 15%;
+}
+.search-inputSet1{
+	margin-top: 8%;
+	width: 30%;
+}
+.search-inputSet2{
+	margin-top: 3%;
+	width: 30%;
+	float: left;
+}
+.search-inputSet3{
+	margin-top: 3%;
+	padding-left: 5%;
+	width: 30%;
+	/* float: left; */
+}
+.search-inputSet4{
+	margin-top: 4%;
+	margin-left: 30%;
+	margin-bottom: 5%;
+	clear: both;
+}
+.canfku-button{
+	padding-left: 5%;
+	float: left;
+}
