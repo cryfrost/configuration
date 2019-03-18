@@ -1,0 +1,200 @@
+html：
+
+<div class="collapse navbar-collapse bs-js-navbar-scrollspy" >
+		<ul class="pagination" style="margin-left:5%;" id="detail-ul">
+			<li id="pre"><a href="search.do?ye=${p.ye-1}&id81001=${materiel.id81001}&na81001=${materiel.na81001}&na81003=${materiel.na81003}">&laquo;</a></li>
+			<c:forEach begin="${p.beginYe}" end="${p.endYe}" varStatus="status">
+				<li <c:if test="${p.ye==status.index}"> class="active"</c:if>>
+					<a href="search.do?ye=${status.index}&id81001=${materiel.id81001}&na81001=${materiel.na81001}
+					&na81003=${materiel.na81003}">${status.index}</a>
+				</li>
+			</c:forEach>
+			<li id="next">
+				<a href="search.do?ye=${p.ye+1}&id81001=${materiel.id81001}
+				&na81001=${materiel.na81001}&na81003=${materiel.na81003}">&raquo;
+				</a>
+			</li>
+		</ul>
+		<div style="width:90% ;margin-left: 5%;height:400px; overflow:auto;" id="detail">
+			<table class="table">
+				<tr>
+					<th>No.</th><th>仓品编号</th><th>仓品名称</th><th>仓品型号</th><th>在库数量</th><th>物料商品区</th><th>详细</th>
+				</tr>
+				<c:forEach items="${list}" var="list" varStatus="status">
+					<tr>
+						<td>${status.index+1}</td>
+						<td>${list.id81001}</td>
+						<td>${list.na81001}</td>
+						<td>${list.na81003}</td>
+						<td>${list.su30001}</td>
+						<td>${list.nb80001}</td>
+						<td><a href="detail.do?id81001=${list.id81001}&na81003=${list.na81003}&nb80001=${list.nb80001}">详细</a></td>
+					</tr>
+				</c:forEach>
+			</table>
+		</div>
+	</div>
+  
+ controller：
+ 
+  /* 检索后进行分页查询 */
+	@ResponseBody()
+//	@RequestMapping("search")
+	@RequestMapping(value = "search", produces = "application/json;charset=utf-8")
+	public ModelAndView search(Materiel materiel, Integer ye) {
+		// 检索触发后显示div框
+		int i = 1;
+		if (materiel == null) {
+			i = 0;
+		}
+		// 判断分页的页码值，并初始化
+		if (ye == null) {
+			ye = 1;
+		}
+		// 分页查询的项目总数
+		Integer count = inStockService.searchCount(materiel);
+		// 调用util类，
+		// Pagination：页码，总数，每页显示数目，分页显示数控制
+		Pagination p = new Pagination(ye, count, constants.EMP_NUM_IN_PAGE, constants.EMP_NUM_OF_PAGE);
+		ModelAndView mv = new ModelAndView(path + "InStock");
+		// 返回每页显示的项目
+		List<Materiel> list = inStockService.search(materiel, (ye - 1) * constants.EMP_NUM_IN_PAGE + 1,
+				ye * constants.EMP_NUM_IN_PAGE);
+		mv.addObject("p", p);
+		mv.addObject("list", list);
+		mv.addObject("i", i);
+		mv.addObject("materiel", materiel);
+		return mv;
+	}
+  
+  service：
+  /* 分页查询，service层实现 */
+	@Override
+	public List<Materiel> search(Materiel materiel, Integer begin, Integer end) {
+		List<Materiel> list = inStockDao.search(materiel, begin, end);
+		return list;
+	}
+  
+  	/* 分页查询总数获取，service层实现 */
+	@Override
+	public Integer searchCount(Materiel materiel) {
+		Integer count = inStockDao.searchCount(materiel);
+		return count;
+	}
+  
+  dao：
+  
+  	/* 获取Materiel、Product联表分页查询所有项目 */
+	public List<Materiel> search(@Param("materiel") Materiel materiel, @Param("begin") Integer begin,
+			@Param("end") Integer end);
+
+	/* 获取Materiel、Product联表分页查询所需条数 */
+	public Integer searchCount(@Param("materiel") Materiel materiel);
+  
+  
+  xml：
+  
+  <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC   
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dao.InStockDao">
+	<!-- 分页联表查询 -->
+	<select id="search" resultMap="Materiel">
+		SELECT id81001,na81003，na81001，nb80001，su30001 
+		FROM (
+				SELECT id81001,na81003，na81001，nb80001，su30001 ,
+				ROWNUM AS RQ FROM (
+					SELECT id81001,na81003，na81001，nb80001，
+					su30001 FROM MATERIEL
+		    		UNION
+					SELECT id80001 as id81001,na80002 as na81003,na80001 as na81001,
+					nb80001,su30001
+	      			FROM PRODUCT WHERE 1=1)
+	   <where>
+		<if test="materiel.id81001!=null and materiel.id81001!=''">
+			AND id81001 like '%${materiel.id81001}%'
+		</if>
+		<if test="materiel.na81003!=null and materiel.na81003!=''">
+			AND na81003 like '%${materiel.na81003}%'
+		</if>
+		<if test="materiel.na81001!=null and materiel.na81001!=''">
+			AND na81001 like '%${materiel.na81001}%'
+		</if>
+	   </where>)
+	   WHERE RQ BETWEEN #{begin} and #{end}
+	</select>
+	<!-- 分页总数联表查询 -->
+	<select id="searchCount" resultType="java.lang.Integer" >
+        SELECT count(id) FROM
+        (   SELECT id81001 as id,na81003，na81001，nb80001，su30001 FROM (
+				SELECT id81001,na81003，na81001，nb80001，su30001 FROM MATERIEL
+		    	UNION
+				SELECT id80001 as id81001,na80002 as na81003,na80001 as na81001,nb80001,su30001
+	      			FROM PRODUCT)
+	   <where>
+			<if test="materiel.id81001!=null and materiel.id81001!=''">
+				AND id81001 like '%${materiel.id81001}%'
+			</if>
+			<if test="materiel.na81003!=null and materiel.na81003!=''">
+				AND na81003 like '%${materiel.na81003}%'
+			</if>
+			<if test="materiel.na81001!=null and materiel.na81001!=''">
+				AND na81001 like '%${materiel.na81001}%'
+			</if>
+			<if test="materiel.nb80001!=null and materiel.nb80001!=''">
+				AND nb80001 like '%${materiel.nb80001}%'
+			</if>
+		</where>
+        ) 
+    </select>
+	<!-- 联表查询最大ID -->
+   <select id="selectmaxid" resultType="java.lang.Integer" >
+        SELECT MAX(id) FROM
+        (   SELECT id81001 AS id
+            FROM MATERIEL WHERE 1=1
+            UNION
+            SELECT id80001 AS id
+            FROM PRODUCT WHERE 1=1
+        ) 
+    </select>
+    <!-- 联表表查询所有 -->
+	<select id="selectall" resultMap="Materiel">
+    SELECT id81001,na81003，na81001，nb80001，su30001 FROM (
+		SELECT id81001,na81003，na81001，nb80001，su30001 FROM MATERIEL
+		UNION
+		SELECT id80001 as id81001,na80002 as na81003,na80001 as na81001,nb80001,su30001
+	      	FROM PRODUCT WHERE 1=1)
+	   <where>
+			<if test="materiel.id81001!=null and materiel.id81001!=''">
+				AND id81001 like '%${materiel.id81001}%'
+			</if>
+			<if test="materiel.na81003!=null and materiel.na81003!=''">
+				AND na81003 like '%${materiel.na81003}%'
+			</if>
+			<if test="materiel.na81001!=null and materiel.na81001!=''">
+				AND na81001 like '%${materiel.na81001}%'
+			</if>
+			<if test="materiel.nb80001!=null and materiel.nb80001!=''">
+				AND nb80001 like '%${materiel.nb80001}%'
+			</if>
+		</where>	      	
+    </select>
+    <!-- 联表查询的resultMap -->
+    <resultMap type="entity.Materiel" id="Materiel">
+    	<id property="id81001" column="id81001" />
+		<id property="na81003" column="na81003" />
+		<result property="na81001" column="na81001" />
+		<result property="nb80001" column="nb80001" />
+		<result property="su30001" column="su30001"/>
+        <association property="product" javaType="entity.Product">
+        	<id property="id81001" column="id80001" />
+			<id property="na81003" column="na80002" />
+			<result property="na81001" column="na80001" />
+			<result property="nb80001" column="nb80001" />
+			<result property="su30001" column="su30001"/>
+	    </association>
+	</resultMap>
+</mapper>
+  
+  
