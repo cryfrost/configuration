@@ -1,0 +1,785 @@
+html1：
+<%@ page language="java" contentType="text/html; charset=utf-8"
+    pageEncoding="utf-8"%>
+    <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Insert title here</title>
+<link href="<%=request.getContextPath()%>/bootstrap/css/bootstrap.css"
+	rel="stylesheet" />
+<script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../js/jquery.js"></script>
+<script src="../bootstrap/js/bootstrap.js"></script>
+
+<script type="text/javascript">
+	$(document).ready(function(){ 
+		if(${i}==0){    
+			$("#shuju").hide();
+		}else{  
+			$("#shuju").show();
+		}
+		$("#chongzhi").click(function(){
+			$("#wlbianhao").val("");
+			$("#wlmingcheng").val("");
+			$("#wlxinghao").val("");
+			$("#ywybianhao").val("");
+			$("#dingdanriqi1").val("");
+			$("#dingdanriqi2").val("");
+		})
+		$("#xinjian").click(function(){
+			location.href="showxinjian.do"
+		})
+		$("#delete").click(function(){
+			var bxzdhz=$('input[type=checkbox]:checked');
+			var myArray=new Array()
+			$.each(bxzdhz,function(){
+				myArray.push($(this).data("id"));
+				
+			});
+			if(myArray==""){
+				alert("请选中一条或多条数据!");
+			}else{
+				location.href="delete2.do?condition="+myArray;
+			}
+
+		})
+		$("#update").click(function(){
+			var bxzdhz=$('input[type=checkbox]:checked').data("id");			
+			if(bxzdhz==null ){
+				alert("请选择一条数据!");
+			}else{
+				location.href="showupdate.do?a="+bxzdhz;
+			}
+			
+		})
+		$("#jiansuo").click(function(){
+			//$("#shuju").css("display","block");
+			var ID81001=$("[name=ID81001]").val();
+			var reg=/^[0-9]*$/;
+			if(!reg.test(ID81001)){
+				$("#wlbianhao").after("<label style='color:red' id='tishi'>请输入数字</label>");			
+				return false;
+			}
+		})
+		if (${p.ye}<= 1) { 
+			$("#pre").addClass("disabled");
+			$("#pre").find("a").attr("onclick", "return false");
+		}
+ 
+		if (${p.ye}>=${p.maxYe}) {   
+			$("#next").addClass("disabled");
+			$("#next").find("a").attr("onclick", "return false");
+		}
+		/* $("#myModal").on('show.bs.modal',function(event){
+			
+			//var userName = a.context.dataset.username;
+			var userName=$(event.relatedTarget).data("username")
+			//var modal = $(this);
+			$(this).find('#userName').val("worilima");
+		}) */
+	})
+</script>
+</head>
+<body>
+	<body>
+			<nav class="navbar navbar-default" role="navigation">
+				<div class="container-fluid">
+				<div class="navbar-header">
+					<a class="navbar-brand" href="../login/back.do">物料管理</a>
+				</div>
+				<div>
+					<ul class="nav navbar-nav">
+						<li class="active"><a href="zhu.do">生产物料</a></li>
+					</ul>
+				</div>
+				</div>
+			</nav>
+			<div class="container">
+				<form action="zhu.do" method="post" class="form-horizontal" role="form" style="margin-top: 50px;">
+					<div class="form-group">
+						<label for="firstname" class="col-sm-2 control-label">物料编号</label>
+						<div class="col-sm-2">
+							<input type="text" class="form-control" id="wlbianhao" name="ID81001" placeholder="请输入物料编号" value="${pm00003Entity.ID81001 }">
+						</div>
+						
+						<!-- <div class="col-sm-1">
+							<button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#myModal">辅助查询</button>
+						</div> -->
+						<label for="firstname" class="col-sm-1 control-label"></label>
+						<label for="firstname" class="col-sm-2 control-label">业务员编号</label>
+						<div class="col-sm-2">
+							<input type="text" class="form-control" id="ywybianhao" placeholder="请输入业务员编号">
+						</div>
+						<div class="col-sm-1">
+							<button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#myModal" data-username="张三">辅助查询</button>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="lastname" class="col-sm-2 control-label">物料名称</label>
+						<div class="col-sm-2">
+							<input type="text" class="form-control" id="wlmingcheng" name="NA81001" placeholder="请输入物料名称" value="${pm00003Entity.NA81001 }">
+						</div>
+						<label for="lastname" class="col-sm-3 control-label">物料型号</label>
+						<div class="col-sm-2">
+							<input type="text" class="form-control" id="wlxinghao" name="NA81003" placeholder="请输入物料型号" value="${pm00003Entity.NA81003 }">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="lastname" class="col-sm-2 control-label">订单日期</label>
+						<div class="col-sm-2">
+							<input type="date" class="form-control" id="dingdanriqi1" placeholder="请选择订单日期">
+						</div>
+						<div class="col-sm-2">
+							<input type="date" class="form-control" id="dingdanriqi2" placeholder="请选择订单日期">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="lastname" class="col-sm-2 control-label"></label>
+						<div class="col-sm-1">
+							<button type="button" class="btn btn-primary btn-sm" id="xinjian">新建</button>
+						</div>
+						
+						<label for="lastname" class="col-sm-3 control-label"></label>
+						<div class="col-sm-1">
+							<button type="submit" class="btn btn-primary btn-sm" id="jiansuo">检索</button>
+						</div>
+						<label for="lastname" class="col-sm-2 control-label"></label>
+						<div class="col-sm-1">
+							<button type="button" id="chongzhi" class="btn btn-primary btn-sm">条件重置</button>
+						</div>
+					</div>
+				</form>
+			<div id="shuju">			
+				<ul class="pagination" style="margin-left:110px;">
+    				<li id="pre"><a href="zhu.do?ye=${p.ye-1}&ID81001=${pm00003Entity.ID81001}&NA81001=${pm00003Entity.NA81001}&NA81003=${pm00003Entity.NA81003}">&laquo;</a></li>
+    				<c:forEach begin="${p.beginYe}" end="${p.endYe}" varStatus="status">
+   						<li <c:if test="${p.ye==status.index}"> class="active"</c:if>><a href="zhu.do?ye=${status.index}&ID81001=${pm00003Entity.ID81001}&NA81001=${pm00003Entity.NA81001}&NA81003=${pm00003Entity.NA81003}">${status.index}</a></li>
+   					</c:forEach>
+    				<li id="next"><a href="zhu.do?ye=${p.ye+1}&ID81001=${pm00003Entity.ID81001}&NA81001=${pm00003Entity.NA81001}&NA81003=${pm00003Entity.NA81003}">&raquo;</a></li>
+				</ul>
+			
+				<table class="table table-bordered" style="width: 850px;margin-left:110px;">
+					<thead>
+						<tr>
+							<th>Sel</th>
+							<th>No.</th>
+							<th>物料编号</th>
+							<th>物料名称</th>
+							<th>物料型号</th>
+							<th>状态</th>
+							<th>在库数量</th>
+						</tr>
+					</thead>
+					<tbody>
+					<c:forEach items="${list}" var="mete">
+						<tr>
+							<td><input type="checkbox" data-id="${mete.ID81001}"/></td>
+							<td>1</td>
+							<td >${mete.ID81001}</td>
+							<td>${mete.NA81001}</td>
+							<td>${mete.NA81003}</td>
+							<td>${mete.KB10001}</td>
+							<td>${mete.SU30001}</td>
+						</tr>
+					</c:forEach>
+					</tbody>
+				</table>
+				<div class="form-group" style="margin-left: 300px;">
+					<div class="col-sm-3">
+						<button type="button" class="btn btn-primary btn-sm" id="gouru">购入</button>
+					</div>
+					<div class="col-sm-3">
+						<button type="button" class="btn btn-primary btn-sm" id="update">更新</button>
+					</div>
+					<div class="col-sm-3">
+						<button type="button" class="btn btn-primary btn-sm" id="delete">删除</button>
+					</div>
+				</div>
+			</div>
+			<div class="modal fade" id="myModal"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+								&times;
+							</button>
+							<h4 class="modal-title" id="myModalLabel">
+								模态框（Modal）标题
+							</h4>
+						</div>
+						<div class="modal-body" >
+							<iframe src="gotorenyuan.do" height="100%" width="100%" align="left" scrolling="yes" frameborder="0"></iframe>
+						</div>
+						<div class="modal-footer">
+								<button type="button" class="btn btn-default" data-dismiss="modal">
+									关闭
+								</button>
+								<button type="button" class="btn btn-primary">
+									提交更改
+								</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+</body>
+</html>
+
+
+
+
+
+
+新建更新同一页面实现：
+html2：
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+        <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+    
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>changeMateriel</title>
+	<link rel="stylesheet" href="<%=request.getContextPath()%>/bootstrap/css/bootstrap.min.css">  
+	<script src="<%=request.getContextPath()%>/js/jquery.js"></script>
+	<script src="<%=request.getContextPath()%>/bootstrap/js/bootstrap.min.js"></script>
+	<script type="text/javascript">
+	$(document).ready(function(){
+		 $("#shanchu").click(function(){
+			var wlmingcheng=$("#wlmingcheng").val();
+			var wlbianhao=$("#wlbianhao").val();
+			var wlxinghao=$("#wlxinghao").val();
+			var sl=$("#sl").val();
+			var danjia=$("#danjia").val();  
+			var reg=/^[0-9]*$/;
+			
+			 if(wlmingcheng==""){
+				 	$("#cuowu1").html("请输入内容!").css("color","red");
+					$("#wlmingcheng").css('borderColor','red');
+			 }else if(wlmingcheng.length > 4){
+				 	$("#cuowu1").html("名称最大长度不可超过4!").css("color","red");
+					$("#wlmingcheng").css('borderColor','red');
+			 }else{
+					$("#cuowu1").html(" ").css("color","white");
+					$("#wlmingcheng").css('borderColor','');
+			 }	
+			 
+			 
+			 
+			 if(wlbianhao==""){
+				 	$("#cuowu2").html("请输入内容!").css("color","red");
+					$("#wlbianhao").css('borderColor','red');
+			 }else if(wlbianhao.length > 8){
+				 	$("#cuowu2").html("编号最大长度不可超过8!").css("color","red");
+					$("#wlbianhao").css('borderColor','red');
+			 }else{
+					$("#cuowu2").html(" ").css("color","white");
+					$("#wlbianhao").css('borderColor','');
+			 }			  
+			 
+			 
+			 
+			 if(wlxinghao==""){
+				 	$("#cuowu3").html("请输入内容!").css("color","red");
+					$("#wlxinghao").css('borderColor','red');
+			 }else if(wlxinghao.length > 4){
+				 	$("#cuowu3").html("型号最大长度不可超过4!").css("color","red");
+					$("#wlxinghao").css('borderColor','red');
+			 }else{
+					$("#cuowu3").html(" ").css("color","white");
+					$("#wlxinghao").css('borderColor','');
+			 }			
+			 
+			 
+			 
+			 if(sl==""){
+				 	$("#cuowu4").html("请输入内容!").css("color","red");
+					$("#sl").css('borderColor','red');
+			 }else  if(sl.length > 8){
+				 	$("#cuowu4").html("数量最大长度不可超过8!").css("color","red");
+					$("#sl").css('borderColor','red');
+			 }else if(!reg.test(sl)){
+				 $("#cuowu4").html("请输入数字!").css("color","red");	
+				 $("#sl").css('borderColor','red');
+				 
+			 }else{
+					$("#cuowu4").html(" ").css("color","white");
+					$("#sl").css('borderColor','');
+			 }		
+			 
+			 
+			 
+			 if(danjia==""){
+				 	$("#cuowu5").html("请输入内容!").css("color","red");
+					$("#danjia").css('borderColor','red');
+			 }else if(danjia.length > 8){
+				 	$("#cuowu5").html("数量最大长度不可超过8!").css("color","red");
+					$("#danjia").css('borderColor','red');
+			 }else if(!reg.test(danjia)){
+				 $("#cuowu5").html("请输入数字!").css("color","red");	
+				 $("#danjia").css('borderColor','red');
+				 
+			 } else{
+					$("#cuowu5").html(" ").css("color","white");
+					$("#danjia").css('borderColor','');	
+					$.ajax({
+						url:"delete.do",
+						type:"post",
+						data:{"NA81001":wlmingcheng,"ID81001":wlbianhao,"NA81003":wlxinghao,"SU30001":sl,"SU30002":danjia},
+						dataType:"text",
+						success:function(data){
+							alert(data);
+							location.href="showxinjian.do";
+						}
+					})
+			    }
+		});  
+		
+	 $("#xinjian").click(function(){
+			var wlmingcheng=$("#wlmingcheng").val();
+			var wlbianhao=$("#wlbianhao").val();
+			var wlxinghao=$("#wlxinghao").val();
+			var sl=$("#sl").val();
+			var danjia=$("#danjia").val();
+			var reg=/^[0-9]*$/;
+			
+			 if(wlmingcheng==""){
+				 	$("#cuowu1").html("请输入内容!").css("color","red");
+					$("#wlmingcheng").css('borderColor','red');
+			 }else if(wlmingcheng.length > 4){
+				 	$("#cuowu1").html("名称最大长度不可超过4!").css("color","red");
+					$("#wlmingcheng").css('borderColor','red');
+			 }else{
+					$("#cuowu1").html(" ").css("color","white");
+					$("#wlmingcheng").css('borderColor','');
+			 }	 			
+			 
+			 
+			 
+			 if(wlbianhao==""){
+				 	$("#cuowu2").html("请输入内容!").css("color","red");
+					$("#wlbianhao").css('borderColor','red');
+			 }else if(wlbianhao.length > 8){
+				 	$("#cuowu2").html("编号最大长度不可超过8!").css("color","red");
+					$("#wlbianhao").css('borderColor','red');
+			 }else{
+					$("#cuowu2").html(" ").css("color","white");
+					$("#wlbianhao").css('borderColor','');
+			 }			  
+			 
+			 
+			 
+			 if(wlxinghao==""){
+				 	$("#cuowu3").html("请输入内容!").css("color","red");
+					$("#wlxinghao").css('borderColor','red');
+			 }else if(wlxinghao.length > 4){
+				 	$("#cuowu3").html("型号最大长度不可超过4!").css("color","red");
+					$("#wlxinghao").css('borderColor','red');
+			 }else{
+					$("#cuowu3").html(" ").css("color","white");
+					$("#wlxinghao").css('borderColor','');
+			 }			
+			 
+			 
+			 
+			 if(sl==""){
+				 	$("#cuowu4").html("请输入内容!").css("color","red");
+					$("#sl").css('borderColor','red');
+			 }else  if(sl.length > 8){
+				 	$("#cuowu4").html("数量最大长度不可超过8!").css("color","red");
+					$("#sl").css('borderColor','red');
+			 }else if(!reg.test(sl)){
+				 $("#cuowu4").html("请输入数字!").css("color","red");	
+				 $("#sl").css('borderColor','red');
+				 
+			 }else{
+					$("#cuowu4").html(" ").css("color","white");
+					$("#sl").css('borderColor','');
+			 }	
+			 
+			 
+			 
+			 if(danjia==""){
+				 	$("#cuowu5").html("请输入内容!").css("color","red");
+					$("#danjia").css('borderColor','red');
+			 }else if(danjia.length > 8){
+				 	$("#cuowu5").html("数量最大长度不可超过8!").css("color","red");
+					$("#danjia").css('borderColor','red');
+			 }else if(!reg.test(danjia)){
+				 $("#cuowu5").html("请输入数字!").css("color","red");	
+				 $("#danjia").css('borderColor','red');
+				 
+			 } else{
+					$("#cuowu5").html(" ").css("color","white");
+					$("#danjia").css('borderColor','');	
+					$.ajax({
+						url:"add2.do",
+						type:"post",
+						data:{"NA81001":wlmingcheng,"ID81001":wlbianhao,"NA81003":wlxinghao,"SU30001":sl,"SU30002":danjia},
+						dataType:"text",
+						success:function(data){
+							alert(data);
+							location.href="showxinjian.do";
+						}
+					})
+			    }
+		});
+	 
+	 $("#genxin").click(function(){
+			var wlmingcheng=$("#wlmingcheng").val();
+			var wlbianhao=$("#wlbianhao").val();
+			var wlxinghao=$("#wlxinghao").val();
+			var sl=$("#sl").val();
+			var danjia=$("#danjia").val();
+			var reg=/^[0-9]*$/;			
+			
+
+			 if(wlmingcheng==""){
+				 	$("#cuowu1").html("请输入内容!").css("color","red");
+					$("#wlmingcheng").css('borderColor','red');
+			 }else if(wlmingcheng.length > 4){
+				 	$("#cuowu1").html("名称最大长度不可超过4!").css("color","red");
+					$("#wlmingcheng").css('borderColor','red');
+			 }else{
+					$("#cuowu1").html(" ").css("color","white");
+					$("#wlmingcheng").css('borderColor','');
+			 }	
+			 
+			 
+			 
+			 if(wlbianhao==""){
+				 	$("#cuowu2").html("请输入内容!").css("color","red");
+					$("#wlbianhao").css('borderColor','red');
+			 }else if(wlbianhao.length > 8){
+				 	$("#cuowu2").html("编号最大长度不可超过8!").css("color","red");
+					$("#wlbianhao").css('borderColor','red');
+			 }else{
+					$("#cuowu2").html(" ").css("color","white");
+					$("#wlbianhao").css('borderColor','');
+			 }			  
+			 
+			 
+			 
+			 if(wlxinghao==""){
+				 	$("#cuowu3").html("请输入内容!").css("color","red");
+					$("#wlxinghao").css('borderColor','red');
+			 }else if(wlxinghao.length > 4){
+				 	$("#cuowu3").html("型号最大长度不可超过4!").css("color","red");
+					$("#wlxinghao").css('borderColor','red');
+			 }else{
+					$("#cuowu3").html(" ").css("color","white");
+					$("#wlxinghao").css('borderColor','');
+			 }			
+			 
+			 
+			 
+			 if(sl==""){
+				 	$("#cuowu4").html("请输入内容!").css("color","red");
+					$("#sl").css('borderColor','red');
+			 }else  if(sl.length > 8){
+				 	$("#cuowu4").html("数量最大长度不可超过8!").css("color","red");
+					$("#sl").css('borderColor','red');
+			 }else if(!reg.test(sl)){
+				 $("#cuowu4").html("请输入数字!").css("color","red");	
+				 $("#sl").css('borderColor','red');
+				 
+			 }else{
+					$("#cuowu4").html(" ").css("color","white");
+					$("#sl").css('borderColor','');
+			 }		
+			 
+			 
+			 
+			 if(danjia==""){
+				 	$("#cuowu5").html("请输入内容!").css("color","red");
+					$("#danjia").css('borderColor','red');
+			 }else if(danjia.length > 8){
+				 	$("#cuowu5").html("数量最大长度不可超过8!").css("color","red");
+					$("#danjia").css('borderColor','red');
+			 }else if(!reg.test(danjia)){
+				 $("#cuowu5").html("请输入数字!").css("color","red");	
+				 $("#danjia").css('borderColor','red');
+				 
+			 } else{
+					$("#cuowu5").html(" ").css("color","white");
+					$("#danjia").css('borderColor','');	
+					$.ajax({
+						url:"update2.do",
+						type:"post",
+						data:{"NA81001":wlmingcheng,"ID81001":wlbianhao,"NA81003":wlxinghao,"SU30001":sl,"SU30002":danjia},
+						dataType:"text",
+						success:function(data){
+							alert(data);
+							location.href="zhu.do";
+						}
+					})
+			    }
+	     })
+	})
+	</script>
+	
+	
+	<!-- $("#chongzhi").click(function(){
+			$("#wlbianhao").val("");
+			$("#wlmingcheng").val("");
+			$("#wlxinghao").val(""); 
+		})
+		$("#xinjian").click(function(){
+			location.href="showxinjian.do"
+		}) -->
+	
+	
+	<style type="text/css">
+		#tr{
+			border-collapse:separate;
+			border-spacing:10px 50px;
+		}
+	</style>
+</head>
+<body>
+<nav class="navbar navbar-default" role="navigation">
+		<div class="container-fluid">
+		<div class="navbar-header">
+			<a class="navbar-brand" href="../login/back.do">生产管理系统</a>
+		</div>
+		<div>
+			<ul class="nav navbar-nav">
+				<li class="active"><a href="zhu.do">生产物料</a></li>
+				<li><a href="showxinjian.do">新建/更新</a></li>
+			</ul>
+		</div>
+		</div>
+	</nav>
+			
+<form action="add2.do" class="form-horizontal" role="form" method="post" enctype="multipart/form-data">			
+	<div class="table-responsive container">
+	<table class="table" >
+		<caption>新建/更新</caption>
+			<tr>
+				<th>订单编号：<input type="text" id="ddbianhao"  class="" name=""  readOnly="true"/></th>
+				<th>物料名称	：<input type="text" id="wlmingcheng" class="" value="${pm00003Entity.NA81001}" name="NA81001"/><span id="cuowu1"></span></th>
+				<td  rowspan="4" style="width: 25%;"><img src="../img/キャプチャ.PNG" width="100%" height="100%" /></td>
+			</tr>
+			<tr>
+				<th>物料编号：<input type="text" id="wlbianhao" class="" value="${a}" name="ID81001"/><span id="cuowu2"></span></th>
+				<th>物料型号：<input type="text" id="wlxinghao" class="" name="NA81003" value="${pm00003Entity.NA81003}"/><span id="cuowu3"></span></th>
+			</tr>
+			<tr>
+				<th>业务员编号：<input type="text" id="ywybianhao" class="" name=""  readOnly="true"/>&nbsp;&nbsp;<button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#myModal1">辅助查询</th>
+				<th>客户名称：<input type="text" id="kemingcheng" class="" name="" readOnly="true" />&nbsp;&nbsp;<button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#myModal2">辅助查询</button></th>
+			</tr>
+			<tr>
+				<th>&nbsp;&nbsp;数&nbsp;&nbsp;量：&nbsp;&nbsp;<input type="text" id="sl" value="${pm00003Entity.SU30001}" class="" name="SU30001"/><span id="cuowu4"></span></th>
+				<th>收货日：&nbsp;&nbsp;<input type="text" id="shr" class="" name="" readOnly="true"/></th>
+			</tr>
+			<tr>
+				<th>&nbsp;&nbsp;单&nbsp;&nbsp;价：&nbsp;&nbsp;<input type="text" id="danjia" class=""  value="${pm00003Entity.SU30002}" name="SU30002"/><span id="cuowu5"></span></th>
+			</tr>
+
+			
+	</table>
+	</div>  		
+	<br />
+	<br />
+	<br />
+	<br />	
+	<div >  
+			<!--<button type="" class="btn btn-primary"   style="margin-left: 36%;">更新</button>  -->
+			
+			<c:choose>
+                   <c:when test="${pm00003Entity.NA81001==null}">
+                   		<button type="button" class="btn btn-primary"  id="xinjian"  style="margin-left: 38%;" >新建</button>
+                   		<button type="button" class="btn btn-primary" style="margin-left: 8%;" id="shanchu">删除</button>
+                   </c:when>
+                   <c:otherwise>
+						<button type="button" class="btn btn-primary"  id="genxin"  style="margin-left: 38%;" >更新</button>
+                   </c:otherwise>
+
+			</c:choose>
+
+			
+			
+	</div>
+</form>		
+<!-- 模态框（人员管理） <a href="Materiel.html"> -->
+<div class="modal fade" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="margin-left: -30%;">
+	<div class="modal-dialog" >
+		<div class="modal-content" style="width:1200px;height: 600px;">
+			<div class="modal-header" >
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+					&times;
+				</button>
+				<h4 class="modal-title" id="myModalLabel">
+					人员管理
+				</h4>
+			</div>
+			<div class="modal-body" style="width:100%;height: 100%;" >
+				<iframe src="listUser.do" height="90%" width="100%" align="left" scrolling="yes" frameborder="0"></iframe>
+			</div>
+			<div>
+					<button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button></td>
+					<button type="button" class="btn btn-primary">完成</button></td>
+			</div>			
+			</div>		
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+
+
+<!-- 模态框（交易管理） -->
+<div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content" >
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+					&times;
+				</button>
+				<h4 class="modal-title" id="myModalLabel">
+					交易管理
+				</h4>
+			</div>
+			<div class="modal-body">
+				<table class="table" >
+							<tr>
+								<th>订单编号：<input type="text" id="" class=""/></th>
+							</tr>
+							<tr>
+								<th>业务员编号：<input type="text" id="" class=""/></th>
+							</tr>
+							<tr>
+								<th>商品名称：<input type="text" id="" class=""/></th>
+							</tr>
+							<tr>
+								<th>商品型号：<input type="text" id="" class=""/></th>
+							</tr>
+							<tr>
+								<th>订单日期：<input type="date" id="" class=""/>-<input type="date" id="" class=""/></th>
+							</tr>
+							<tr></tr>
+							<tr></tr>
+							<tr></tr>
+							<tr>
+								<td align="right"><button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button></td>
+								
+								<td ><button type="button" class="btn btn-primary">完成</button></td>
+							</tr>
+				</table>
+			</div>
+			<!-- <div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭
+				</button>
+				<button type="button" class="btn btn-primary">
+					完成
+				</button>
+			</div> -->
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+</div>
+
+</body>
+</html>
+
+
+
+
+
+
+controller：
+package controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+
+import constants.PM00003Constants;
+import constants.constants;
+import entity.PM00003Entity;
+import service.PM00003Service;
+import util.Pagination;
+
+@Controller
+@RequestMapping("pm00003")
+public class PM00003Controller {
+
+	@Autowired
+	PM00003Service pm00003Service;
+
+	@RequestMapping("zhu")
+	public ModelAndView zhu(PM00003Entity pm00003Entity, Integer ye) {
+		int i = 1;
+		if (pm00003Entity.getNA81001() == null) {
+			i = 0;
+		}
+
+		if (ye == null) {
+			ye = 1;
+		}
+		int count = pm00003Service.searchCount(pm00003Entity);
+		Pagination p = new Pagination(ye, count, constants.EMP_NUM_IN_PAGE, constants.EMP_NUM_OF_PAGE);
+		ModelAndView mv = new ModelAndView(PM00003Constants.path);
+		List<PM00003Entity> list = pm00003Service.search1(pm00003Entity, ye * 2 - 1, ye * 2);
+		mv.addObject(PM00003Constants.list, list);
+		mv.addObject(PM00003Constants.i, i);
+		mv.addObject(PM00003Constants.pm00003Entity, pm00003Entity);
+		mv.addObject(PM00003Constants.p, p);
+		return mv;
+	}
+
+	@RequestMapping("showxinjian")
+	public ModelAndView search() {
+		ModelAndView mv = new ModelAndView(constants.path + "changeMateriel");
+		Integer a = pm00003Service.search();
+		mv.addObject(PM00003Constants.a, a);
+		return mv;
+	}
+
+	@ResponseBody()
+	@RequestMapping(value = "add2", produces = "application/json;charset=utf-8")
+	public String add2(PM00003Entity emp) {
+		String flag = pm00003Service.add(emp);
+
+		return flag;
+	}
+
+	@ResponseBody()
+	@RequestMapping(value = "delete", produces = "application/json;charset=utf-8")
+	public String delete(PM00003Entity emp) {
+		String flag = pm00003Service.delete(emp);
+
+		return flag;
+
+	}
+
+	@RequestMapping(value = "showupdate")
+	public ModelAndView update(Integer a) {
+		ModelAndView mv = new ModelAndView(constants.path + "changeMateriel");
+		PM00003Entity pm00003entity = pm00003Service.select(a);
+		mv.addObject(PM00003Constants.a, a);
+		mv.addObject(PM00003Constants.pm00003Entity, pm00003entity);
+		return mv;
+
+	}
+
+	@ResponseBody()
+	@RequestMapping(value = "update2", produces = "application/json;charset=utf-8")
+	public String update2(PM00003Entity emp) {
+		String flag = pm00003Service.update(emp);
+
+		return flag;
+
+	}
+
+	@RequestMapping(value = "delete2")
+	public String delete2(String condition) {
+		pm00003Service.delete2(condition);
+		return "redirect:zhu.do";
+	}
+
+}
