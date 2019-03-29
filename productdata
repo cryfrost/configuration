@@ -1,0 +1,259 @@
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Scanner;
+
+import connection.getConnetion;
+import entity.ColumnAndType;
+
+/**
+ *
+ * @ClassName:test.java
+ * @Description:test.java
+ * 
+ * @author:gaof
+ * @date: 2019/03/27 11:27:40
+ *
+ */
+public class test {
+	public static void main(String[] args) {
+		System.out.println("请输入表名：");
+		Scanner sc = new Scanner(System.in);
+		String name = sc.nextLine();
+		System.out.println("要多少条数据:");
+		int count = sc.nextInt();
+		sc.close();
+
+		Date date = new Date();
+		SimpleDateFormat sf = new SimpleDateFormat("yyyy/MM/dd");
+		getConnetion getConnetion = new getConnetion();
+		List<ColumnAndType> list = getConnetion.searchColumnType(name);
+		Object[] myArray = new Object[list.size() * count];
+		// 用来拼接字符类型数据的假数据
+		String bString = "A";
+		// 判断列是字符类型的有多少
+		int num = 0;
+		for (int i = 0; i < list.size(); i++) {
+			if (list.get(i % list.size()).getData_Type().equals("VARCHAR2")) {
+				num++;
+			}
+		}
+		// 创建一个字符数组，数组长度为num/26+1，每一个元素的值都是A；
+		char[] charArray = new char[num / 26 + 1];
+		for (int i = 0; i < charArray.length; i++) {
+			charArray[i] = bString.charAt(0);
+		}
+		// 定义一个标记，对长度大于2的列的数量进行计数
+		int count2 = 0;
+		// 对obj数据进行赋值
+		for (int j = 0; j < count; j++) {
+			char f = 'A';
+			int c = 1001 + j;
+			// 把用过的元素都初始化为'A'
+			for (int i = 0; i < count2 / 26 + 1; i++) {
+				charArray[i] = 'A';
+			}
+			// 重新开始计数
+			count2 = 0;
+			for (int i = j * list.size(); i < (j + 1) * list.size(); i++) {
+				if (list.get(i % list.size()).getData_Type().equals("NUMBER")) {
+					if (list.get(i % list.size()).getData_Scale() == 0) {
+						myArray[i] = c++;
+					} else {
+						double min = 0.0001;// 最小值
+						double max = (int) Math.pow(10, list.get(i % list.size()).getData_Precision()
+								- list.get(i % list.size()).getData_Scale());// 指定整数位
+						int scl = list.get(i % list.size()).getData_Scale();// 小数最大位数
+						int pow = (int) Math.pow(10, scl);// 指定小数位
+						double one = Math.floor((Math.random() * (max - min) + min) * pow) / pow;
+						myArray[i] = one;
+					}
+				} else if (list.get(i % list.size()).getData_Type().equals("VARCHAR2")) {
+					if (list.get(i % list.size()).getData_Length() > 1) {
+						String aString = "";
+						for (int k = 0; k < count2 / 26; k++) {
+							aString += bString;
+						}
+						myArray[i] = aString + charArray[count2 / 26]++ + "" + (i / list.size() + 1) + "";
+						count2++;
+					} else {
+						myArray[i] = (char) f++;
+					}
+				} else if (list.get(i % list.size()).getData_Type().equals("DATE")) {
+					myArray[i] = sf.format(date);
+				}
+			}
+		}
+		for (int i = 0; i < list.size() * count; i++) {
+			if (i % list.size() == 0 && i != 0) {
+				System.out.println();
+			}
+			System.out.print(myArray[i] + "	");
+		}
+
+	}
+
+}
+
+
+
+
+
+
+
+package connection;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import entity.ColumnAndType;
+
+/**
+ *
+ * @ClassName:connetion.java
+ * @Description:connetion.java
+ * 
+ * @author:gaof
+ * @date: 2019/03/27 10:30:58
+ *
+ */
+public class getConnetion {
+	Connection conn = null;
+	PreparedStatement ps = null;
+	ResultSet rs = null;
+
+	public List<ColumnAndType> searchColumnType(String name) {
+		List<ColumnAndType> list = new ArrayList<ColumnAndType>();
+		try {
+			getConnection();
+			String sql = "select COLUMN_NAME,DATA_LENGTH,DATA_TYPE,DATA_PRECISION ,DATA_SCALE  from user_tab_columns where TABLE_name=upper('"
+					+ name + "') order by COLUMN_ID";
+			ps = conn.prepareStatement(sql);
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				ColumnAndType columnAndType = new ColumnAndType();
+				columnAndType.setColumn_Name(rs.getString("COLUMN_NAME"));
+				columnAndType.setData_Type(rs.getString("DATA_TYPE"));
+				columnAndType.setData_Length(rs.getInt("DATA_LENGTH"));
+				columnAndType.setData_Precision(rs.getInt("DATA_PRECISION"));
+				columnAndType.setData_Scale(rs.getInt("DATA_SCALE"));
+				list.add(columnAndType);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			closeAll();
+		}
+		return list;
+	}
+
+	public void getConnection() {
+		try {
+			Class.forName("oracle.jdbc.OracleDriver");
+			conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "c##gladen", "gladen");
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	public void closeAll() {
+		if (rs != null) {
+			try {
+				rs.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		if (ps != null) {
+			try {
+				ps.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		if (conn != null) {
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+}
+
+
+
+
+
+package entity;
+
+/**
+ *
+ * @ClassName:ColumnAndType.java
+ * @Description:ColumnAndType.java
+ * 
+ * @author:gaof
+ * @date: 2019/03/27 13:31:56
+ *
+ */
+public class ColumnAndType {
+	private String column_Name;
+	private String data_Type;
+	private int data_Length;
+	private int data_Precision;
+	private int data_Scale;
+
+	public int getData_Precision() {
+		return data_Precision;
+	}
+
+	public void setData_Precision(int data_Precision) {
+		this.data_Precision = data_Precision;
+	}
+
+	public int getData_Scale() {
+		return data_Scale;
+	}
+
+	public void setData_Scale(int data_Scale) {
+		this.data_Scale = data_Scale;
+	}
+
+	public String getColumn_Name() {
+		return column_Name;
+	}
+
+	public void setColumn_Name(String column_Name) {
+		this.column_Name = column_Name;
+	}
+
+	public String getData_Type() {
+		return data_Type;
+	}
+
+	public void setData_Type(String data_Type) {
+		this.data_Type = data_Type;
+	}
+
+	public int getData_Length() {
+		return data_Length;
+	}
+
+	public void setData_Length(int data_Length) {
+		this.data_Length = data_Length;
+	}
+
+}
+
+
