@@ -1,0 +1,138 @@
+1.新建filter包，在包内新建LoginFilter类											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+											
+2.将LoginFilter类实现Filter接口 如下：				接口共有三个方法我们只需对doFilter方法进行编辑							
+											
+	package filter;										
+											
+	import java.io.IOException;										
+											
+	import javax.servlet.Filter;										
+	import javax.servlet.FilterChain;										
+	import javax.servlet.FilterConfig;										
+	import javax.servlet.RequestDispatcher;										
+	import javax.servlet.ServletException;										
+	import javax.servlet.ServletRequest;										
+	import javax.servlet.ServletResponse;										
+	import javax.servlet.http.HttpServletRequest;										
+	import javax.servlet.http.HttpServletResponse;										
+	import javax.servlet.http.HttpSession;										
+											
+	public class LoginFilter implements Filter {						：方法实现接口				
+											
+		@Override									
+		public void init(FilterConfig filterConfig) throws ServletException {									
+			// TODO Auto-generated method stub								
+											
+		}									
+											
+		@Override									
+		public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)									
+				throws IOException, ServletException {							
+			// TODO Auto-generated method stub								
+											
+		}									
+											
+		@Override									
+		public void destroy() {									
+			// TODO Auto-generated method stub								
+											
+		}									
+											
+											
+	}										
+											
+											
+3.具体代码											
+	package filter;										
+											
+	import java.io.IOException;										
+											
+	import javax.servlet.Filter;										
+	import javax.servlet.FilterChain;										
+	import javax.servlet.FilterConfig;										
+	import javax.servlet.RequestDispatcher;										
+	import javax.servlet.ServletException;										
+	import javax.servlet.ServletRequest;										
+	import javax.servlet.ServletResponse;										
+	import javax.servlet.http.HttpServletRequest;										
+	import javax.servlet.http.HttpServletResponse;										
+	import javax.servlet.http.HttpSession;										
+											
+	public class LoginFilter implements Filter {										
+											
+		@Override									
+		public void destroy() {									
+			// TODO Auto-generated method stub								
+		}									
+											
+		@Override									
+		public void doFilter(ServletRequest req, ServletResponse resp,									
+				FilterChain chain) throws IOException, ServletException {							
+			//获取request，response对象								
+			HttpServletRequest request=(HttpServletRequest) req;								
+			HttpServletResponse response=(HttpServletResponse) resp;								
+			//设置字符编码								
+			request.setCharacterEncoding("utf-8");								
+			response.setCharacterEncoding("utf-8");								
+			response.setContentType("text/html");								
+			// 获得用户请求的URI								
+			String path=request.getServletPath();								
+			//可以通过的方法								
+			if(path.equals("/login/login.do")||path.equals("/login/showMain.do")){								
+				//判断是login/login.do，/login/showMain.do这两个方法放行							
+				chain.doFilter(request, response);							
+			}else{								
+			//获取session对象								
+			HttpSession session=request.getSession(true);								
+			Integer u=(Integer)session.getAttribute("uid");								
+			//判断session中的用户名是否为空								
+			if(u!=null){								
+				//用户名不为空继续执行							
+				chain.doFilter(request, response);							
+			}else{								
+				//用户名为空返回登录页面							
+				response.sendRedirect("/PMS/login/login.do");							
+			}								
+			}								
+		}									
+		@Override									
+		public void init(FilterConfig arg0) throws ServletException {									
+			// TODO Auto-generated method stub								
+		}									
+	}										
+											
+4.web.xml配置											
+											
+	   <filter>										
+	    <filter-name>LoginFilter</filter-name>					：过滤器名称					
+	    <filter-class>filter.LoginFilter</filter-class>					：过滤器类的包路径（filter包下的LoginFilter类）					
+	  </filter>										
+	  <filter-mapping>										
+	    <filter-name>LoginFilter</filter-name>					：过滤映射器					
+	    <url-pattern>*.do</url-pattern>					：指定过滤器作用的对象					
+	  </filter-mapping>										
+											
