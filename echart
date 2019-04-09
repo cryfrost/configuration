@@ -1,0 +1,357 @@
+<%@ page language="java" contentType="text/html; charset=utf-8"
+    pageEncoding="utf-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+		<script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+		<script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<script src="<%=request.getContextPath()%>/js/jquery.js"></script>
+		<script src="<%=request.getContextPath()%>/js/echarts.js"></script>
+		<script src="<%=request.getContextPath()%>/js/echart.js"></script>
+		<style type="text/css">
+			button{
+				width: 350px;
+				height: 80px;
+				font-size: 1px;
+			}
+		</style>
+		<script language="JavaScript">
+			function showWarehouse(){
+				top.location.href = "showWarehouse.do"
+				}
+		</script>
+<title>Insert title here</title>
+</head>
+<body>
+<button type="button" class="btn btn-primary" id="renyuanguanli" style="margin-left: 400px;margin-top: 3.125rem;" onclick="showWarehouse()">仓库在职分</button>
+	</body>
+	<div>
+		<div id="proEchart" style="width: 600px;height:400px;margin:200px auto">
+		
+		</div>
+		<div id="matEchart" style="width: 600px;height:400px;margin:200px auto">
+		
+		</div>
+		<div id="lineEchart" style="width: 600px;height:400px;margin:200px auto">
+		
+		</div>
+	</div>
+</body>
+</html>
+
+
+
+$(document).ready(function(){
+	//ajax控制页面加载的时候访问后台，从后台拿到数据给饼状图赋值
+	$.ajax({
+		url:"proEchart.do",//访问后台方法，返回的是一个list集合
+		type:'post',
+		dataType:"json",//返回的数据类型是json
+		success:function(data){
+			var arr=data
+			var arr1=new Array();//这个数组用来显示左上角的说明
+			var arr2=new Array();//这个数组用来控制饼状图各个区域的大小和名字
+			for(var i=0;i<arr.length;i++){//遍历返回的集合
+				var obj={//创建一个对象用来控制区域的大小和名字，要和原始的饼状图的对应
+					value:arr[i].su30001,
+					name:arr[i].na80001
+				}
+				arr1.push(arr[i].na80001);//push()把元素添加到数组中
+				arr2.push(obj)
+			}					
+			// 基于准备好的dom，初始化echarts实例
+			var myChart = echarts.init(document.getElementById('proEchart'));		
+			// 指定图表的配置项和数据
+			var option = {
+				title : {
+				text: '某站点用户访问来源',
+				subtext: '纯属虚构',
+				x:'center'
+			},
+			tooltip : {
+				trigger: 'item',
+				formatter: "{a} <br/>{b} : {c} ({d}%)"
+			},
+			legend: {
+				orient : 'vertical',
+				x : 'left',
+				data:arr1//['直接访问','邮件营销','联盟广告','视频广告','搜索引擎']
+						//上面是模板上的数据，我们要给它重新赋值，用arr1里的数据
+			},
+			toolbox: {
+				show : true,
+				feature : {
+					mark : {show: true},
+					dataView : {show: true, readOnly: false},
+					magicType : {
+						show: true, 
+						type: ['pie', 'funnel'],
+						option: {
+							funnel: {
+								x: '25%',
+								width: '50%',
+								funnelAlign: 'left',
+								max: 1548
+							}
+						}
+					},
+					restore : {show: true},
+					saveAsImage : {show: true}
+				}
+			},
+			calculable : true,
+			series : [
+				{
+					name:'访问来源',
+					type:'pie',
+					radius : '55%',
+					center: ['50%', '60%'],
+					data:arr2/* {value:335, name:'直接访问'},
+	                {value:310, name:'邮件营销'},
+	                {value:234, name:'联盟广告'},
+	                {value:135, name:'视频广告'},
+	                {value:1548, name:'搜索引擎'}这个是模板上的原始数据，用arr2重新赋值 */
+				}
+			]
+			};		
+			// 使用刚指定的配置项和数据显示图表。
+			myChart.setOption(option);
+		}					
+	})	
+	
+	//ajax控制页面加载的时候访问后台，从后台拿到数据给饼状图赋值
+	$.ajax({
+		url:"matEchart.do",//访问后台方法，返回的是一个list集合
+		type:'post',
+		dataType:"json",//返回的数据类型是json
+		success:function(data){
+			var arr=data
+			var arr1=new Array();//这个数组用来显示左上角的说明
+			var arr2=new Array();//这个数组用来控制饼状图各个区域的大小和名字
+			for(var i=0;i<arr.length;i++){//遍历返回的集合
+				var obj={//创建一个对象用来控制区域的大小和名字，要和原始的饼状图的对应
+					value:arr[i].su30001,
+					name:arr[i].na81001
+				}
+				arr1.push(arr[i].na81001);//push()把元素添加到数组中
+				arr2.push(obj)
+			}					
+			// 基于准备好的dom，初始化echarts实例
+			var myChart = echarts.init(document.getElementById('matEchart'));		
+			// 指定图表的配置项和数据
+			var option = {
+				title : {
+				text: '某站点用户访问来源',
+				subtext: '纯属虚构',
+				x:'center'
+			},
+			tooltip : {
+				trigger: 'item',
+				formatter: "{a} <br/>{b} : {c} ({d}%)"
+			},
+			legend: {
+				orient : 'vertical',
+				x : 'left',
+				data:arr1//['直接访问','邮件营销','联盟广告','视频广告','搜索引擎']
+						//上面是模板上的数据，我们要给它重新赋值，用arr1里的数据
+			},
+			toolbox: {
+				show : true,
+				feature : {
+					mark : {show: true},
+					dataView : {show: true, readOnly: false},
+					magicType : {
+						show: true, 
+						type: ['pie', 'funnel'],
+						option: {
+							funnel: {
+								x: '25%',
+								width: '50%',
+								funnelAlign: 'left',
+								max: 1548
+							}
+						}
+					},
+					restore : {show: true},
+					saveAsImage : {show: true}
+				}
+			},
+			calculable : true,
+			series : [
+				{
+					name:'访问来源',
+					type:'pie',
+					radius : '55%',
+					center: ['50%', '60%'],
+					data:arr2/* {value:335, name:'直接访问'},
+	                {value:310, name:'邮件营销'},
+	                {value:234, name:'联盟广告'},
+	                {value:135, name:'视频广告'},
+	                {value:1548, name:'搜索引擎'}这个是模板上的原始数据，用arr2重新赋值 */
+				}
+			]
+			};		
+			// 使用刚指定的配置项和数据显示图表。
+			myChart.setOption(option);
+		}					
+	})	
+	
+	//ajax控制页面加载的时候访问后台，从后台拿到数据给折线图赋值
+	$.ajax({
+		//，访问后台方法，返回的是一个list集合
+		url:"matEchart.do",
+		type:"post",
+		//，返回的数据类型是json
+		dataType:"json",
+		success:function(data){
+			var arr=data
+			//，这个数组用来显示左上角的说明
+			var arr1=new Array();
+			//，这个数组用来控制饼状图各个区域的大小和名字
+			var arr2=new Array();
+			//，遍历返回的集合
+			for(var i=0;i<arr.length;i++){
+				//push()把元素添加到数组中
+				arr1.push(arr[i].na81001);
+				
+				arr2.push(arr[i].su30001) 
+			}		
+			// ，基于准备好的dom，初始化echarts实例
+			var myChart = echarts.init(document.getElementById('lineEchart'));		
+			// ，指定图表的配置项和数据
+			var option = {
+				            title: {
+				            	text: '物资数量折线统计图',
+								subtext: '详情如下'
+				            },
+				            tooltip : {
+				                trigger: 'axis'
+				            },
+				            legend: {
+				                data:['数量']
+				            },
+				            toolbox: {
+				                show : true,
+				                feature : {
+				                    mark : {show: true},
+				                    dataView : {show: true, readOnly: false},
+				                    magicType : {show: true, type: ['line', 'bar']},
+				                    restore : {show: true},
+				                    saveAsImage : {show: true}
+				                }
+				            },
+				            calculable : true,
+				            xAxis: [{
+				            	 type : 'category',
+				                 boundaryGap : false,
+				                 data: arr1,
+				                 axisLabel:{
+				                     //X轴刻度配置
+				                     interval:0, //0：表示全部显示不间隔；auto:表示自动根据刻度个数和宽度自动设置间隔个数
+				                     rotate:40 
+				                 } 
+				                 //["KB001","KB002","KB003","KB004","KB005"]
+				            }],
+				            yAxis: [{
+				            	type : 'value',
+				                axisLabel : {
+				                    formatter: '{value}'
+				                }
+				            }],
+				            series: [
+				            	{
+				                name: '数量',
+				                type: 'line',
+				                data: arr2,
+				                markPoint : {
+				                    data : [
+				                        {type : 'max', name: '最大值'},
+				                        {type : 'min', name: '最小值'}
+				                    ]
+				                },
+				                markLine : {
+				                    data : [
+				                        {type : 'average', name: '平均值'}
+				                    ]
+				                }
+				            }
+				          ]
+				        };                
+			// ，使用刚指定的配置项和数据显示图表。
+			myChart.setOption(option);
+		}					
+	})	
+})		    
+
+
+	/* proEchart */
+	@ResponseBody()
+	@RequestMapping(value = "proEchart", produces = "application/json;charset=utf-8")
+	public List<Product> proEchart() {
+		List<Product> list = pm00005Service.selectPro();
+		return list;
+	}
+
+	/* matEchart */
+	@ResponseBody()
+	@RequestMapping(value = "matEchart", produces = "application/json;charset=utf-8")
+	public List<Materiel> matEchart() {
+		List<Materiel> list = pm00005Service.selectMat();
+		return list;
+	}
+  
+  
+  
+ 	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see service.PM00005Service#selectMat()
+	 */
+	@Override
+	public List<Materiel> selectMat() {
+		List<Materiel> list = pm00025Dao.selectMat();
+		return list;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see service.PM00005Service#selectPro()
+	 */
+	@Override
+	public List<Product> selectPro() {
+		List<Product> list = pm00035Dao.selectPro();
+		return list;
+	}
+  
+  
+  
+  	/* Materiel表的查询操作 */
+	public List<Materiel> selectMat();
+  
+  
+  <mapper namespace="dao.PM00025Dao">
+
+	<!-- ’图表查询 -->
+	<select id="selectMat" resultType="entity.Materiel">
+	 SELECT 
+	   		materiel.id81001,
+	   		materiel.na81001,
+            materiel.su30001
+	   	FROM 
+	   		MATERIEL 
+	</select>
+  
+  <mapper namespace="dao.PM00035Dao">
+
+	<!-- ’图表查询 -->
+    <select id="selectPro" resultType="entity.Product">
+      SELECT 
+      		product.id80001,
+      		product.na80001,
+            product.su30001
+        FROM 
+        	PRODUCT 
+    </select>
